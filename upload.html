@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photo Upload</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:"Segoe UI",Arial,sans-serif;background:#f5f7fb;color:#202b3c}
+main{max-width:420px;margin:0 auto;padding:22px 18px 40px}h1{font-size:22px;margin:0 0 4px}p{margin:0 0 16px;color:#6b7a90;font-size:14px}
+label{display:block;margin-bottom:14px;font-size:13px;font-weight:700;color:#516078}
+select,input[type=number]{width:100%;height:46px;margin-top:6px;padding:0 12px;border:1px solid #d9e0ea;border-radius:10px;font-size:16px;background:#fff}
+.pick{display:flex;align-items:center;justify-content:center;min-height:120px;border:2px dashed #9db8ee;border-radius:14px;background:#fff;color:#2f6fe6;font-size:17px;font-weight:700;text-align:center;cursor:pointer}
+.pick input{display:none}#prev{display:block;width:100%;max-height:300px;object-fit:contain;margin:0 0 14px;border-radius:10px;background:#fff}
+button{width:100%;height:50px;border:0;border-radius:10px;background:#3478f6;color:#fff;font-size:17px;font-weight:700}button:disabled{opacity:.45}
+#pay{display:block;margin:0 0 16px;padding:14px;border-radius:10px;background:#1a9d6a;color:#fff;font-size:18px;font-weight:700;text-decoration:none}#amt{font-size:20px;color:#202b3c;font-weight:700}#msg{margin:12px 0 0;color:#c0392b;text-align:center}#done{text-align:center;padding-top:30px}#tok{display:block;font-size:64px;color:#2f6fe6;margin:6px 0}
+</style>
+</head>
+<body>
+<main>
+<div id="form">
+    <h1>Passport Photo</h1>
+    <p>Apni photo chunein, baaki kaam hum kar denge.<br>अपनी फोटो चुनें, बाकी काम हम करेंगे।</p>
+    <label class="pick"><input type="file" id="f" accept="image/*"><span>📷 Photo chunein / खींचें</span></label>
+    <img id="prev" hidden alt="">
+    <label>Photo ka size / फोटो साइज़
+        <select id="preset"><option value="passport">Passport (35 × 45 mm)</option><option value="square">Square (2 × 2 inch)</option><option value="visa">Visa (2 × 2 inch)</option></select>
+    </label>
+    <label>Kitni copy / कितनी कॉपी
+        <input type="number" id="copies" value="8" min="1" max="40" inputmode="numeric">
+    </label>
+    <button id="send" disabled>Bhejein / भेजें</button>
+    <p id="msg"></p>
+</div>
+<div id="done" hidden>
+    <p>Aapka token / आपका टोकन</p><strong id="tok"></strong>
+    <p id="amt"></p>
+    <a id="pay" href="#" hidden>UPI se pay karein</a>
+    <p>Payment ke baad counter par yeh number bataiye.<br>पेमेंट के बाद काउंटर पर यह नंबर बताइए।</p>
+    <button id="again">Dusri photo / दूसरी फोटो</button>
+</div>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+let blob = null, name = "photo";
+const msg = (t) => { $("msg").textContent = t; };
+
+function shrink(file) { // resize on the phone so upload is quick; also fixes rotation
+    return new Promise((ok, bad) => {
+        const img = new Image(), url = URL.createObjectURL(file);
+        img.onload = () => {
+            const s = Math.min(1, 2000 / Math.max(img.naturalWidth, img.naturalHeight));
+            const c = document.createElement("canvas");
+            c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
+            c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+            URL.revokeObjectURL(url);
+            c.toBlob((b) => (b ? ok(b) : bad(new Error("export"))), "image/jpeg", 0.92);
+        };
+        img.onerror = () => bad(new Error("open"));
+        img.src = url;
+    });
+}
+$("f").onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    msg("");
+    try {
+        blob = await shrink(file);
+        name = file.name.replace(/\.[^.]+$/, "");
+        $("prev").src = URL.createObjectURL(blob); $("prev").hidden = false; $("send").disabled = false;
+    } catch { msg("Yeh photo khul nahi paayi, dusri photo try karein."); }
+};
+$("send").onclick = async () => {
+    $("send").disabled = true; msg("");
+    $("send").textContent = "Bhej rahe hain...";
+    try {
+        const q = new URLSearchParams({ preset: $("preset").value, copies: $("copies").value, name });
+        const r = await fetch("/api/upload?" + q, { method: "POST", headers: { "Content-Type": "image/jpeg" }, body: blob });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error);
+        $("tok").textContent = "#" + d.token;
+        $("amt").textContent = d.amount ? "Amount: ₹" + d.amount : "";
+        $("pay").hidden = !d.upi; if (d.upi) { $("pay").href = d.upi; $("pay").textContent = "₹" + d.amount + " UPI se pay karein"; } $("form").hidden = true; $("done").hidden = false;
+    } catch (e) { msg(e.message || "Nahi gayi, dobara try karein."); $("send").disabled = false; }
+    $("send").textContent = "Bhejein / भेजें";
+};
+$("again").onclick = () => { blob = null; $("f").value = ""; $("prev").hidden = true; $("send").disabled = true; $("done").hidden = true; $("form").hidden = false; };
+</script>
+</body>
+</html>

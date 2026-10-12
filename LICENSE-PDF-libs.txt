@@ -1,0 +1,2 @@
+public/lib/pdf-lib.min.js: pdf-lib, MIT License.
+public/lib/pdf.min.mjs and pdf.worker.min.mjs: PDF.js (Mozilla), Apache License 2.0.

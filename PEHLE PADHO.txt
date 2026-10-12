@@ -1,0 +1,16 @@
+CSC SMART DESK - chalane ka tarika
+
+1. Node.js install karein (nodejs.org -> LTS), phir computer restart karein. Ek hi baar.
+2. Is folder ko Desktop par rakhein (zip ko Extract All karein).
+3. "start.bat" par double-click karein. Chrome me dashboard khul jayega.
+   (Wo kaali window band mat karna. Band karte hi server band ho jayega.)
+4. Pehli baar Windows firewall poochhe to "Allow (Private network)" dabayein.
+5. Customer ka phone aur ye computer ek hi WiFi par hone chahiye.
+
+UPI payment link ke liye "config.json" me apna upiId aur rate bharein, phir start.bat dobara chalayein.
+
+Agar start.bat na chale: is folder me cmd kholein (address bar me cmd likh ke Enter) aur likhein:  node server.js
+Phir Chrome me kholein:  http://localhost:3000
+
+ROZ KA KAAM: Daily Register me "Backup file" roz ek baar save karke pen drive ya Google Drive me rakhein.
+(Register ka data browser me rehta hai. Chrome ka history/cache clear karne se ud sakta hai.)

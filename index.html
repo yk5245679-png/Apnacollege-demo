@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSC Smart Desk</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+<div class="app">
+    <aside class="side">
+        <div class="brand"><span class="logo">CS</span><div><b>CSC Smart Desk</b><small>Digital Seva Kendra</small></div></div>
+        <nav>
+            <button class="nav active" data-view="home"><i>🏠</i>Home</button>
+            <button class="nav" data-view="photo"><i>🖼️</i>Photo Studio</button>
+            <button class="nav" data-view="resize"><i>📏</i>Photo / Sign Resize</button>
+            <button class="nav" data-view="pdf"><i>📄</i>Images to PDF</button>
+            <button class="nav" data-view="pdfx"><i>🗂️</i>PDF Studio</button>
+            <button class="nav" data-view="register"><i>📒</i>Daily Register</button>
+            <button class="nav" data-view="links"><i>🔗</i>Portals / Links</button>
+        </nav>
+        <div class="side-foot">🔒 Photos sirf is computer par rehti hain. Kahin upload nahi hoti.</div>
+    </aside>
+
+    <main>
+        <header class="top"><strong id="crumb">Home</strong><span id="clock"></span></header>
+
+        <section class="view active" id="home-view">
+            <div class="hero">
+                <div><p class="eyebrow" id="today">AAJ</p><h1>Namaste 👋 Aaj ka kaam shuru karein</h1><p>Photo, PDF aur hisaab, sab ek hi jagah. Customer QR scan karke khud photo bhej sakta hai.</p></div>
+                <button class="button button-light" data-go="photo">＋ Nayi photo sheet</button>
+            </div>
+            <div class="stats">
+                <article><span>Aaj ke customer</span><b id="st-cust">0</b></article>
+                <article><span>Aaj ki kamai</span><b id="st-money">₹0</b></article>
+                <article><span>Photo intezaar me</span><b id="st-wait">0</b></article>
+                <article><span>Aaj ki cash / UPI</span><b id="st-split">₹0 / ₹0</b></article>
+            </div>
+            <h2 class="sec">Tools</h2>
+            <div class="tools">
+                <button class="tool" data-go="photo"><i class="t1">🖼️</i><b>Photo Studio</b><small>Passport / visa photo sheet, QR se customer ki photo, seedha print</small></button>
+                <button class="tool" data-go="resize"><i class="t2">📏</i><b>Photo / Sign Resize</b><small>Form ke liye size aur KB set karein (jaise 200×230, 50 KB)</small></button>
+                <button class="tool" data-go="pdf"><i class="t3">📄</i><b>Images to PDF</b><small>Kai photo ya document ko ek PDF me jodein</small></button>
+                <button class="tool" data-go="pdfx"><i class="t5">🗂️</i><b>PDF Studio</b><small>PDF jodna, KB me chhota karna, PDF se JPG</small></button>
+                <button class="tool" data-go="links"><i class="t6">🔗</i><b>Portals / Links</b><small>Aadhaar, DigiLocker, CSC jaisi sites ek click me</small></button>
+                <button class="tool" data-go="register"><i class="t4">📒</i><b>Daily Register</b><small>Aaj ka hisaab, cash/UPI total, CSV export</small></button>
+            </div>
+        </section>
+
+        <section class="view" id="photo-view">
+            <div class="head"><h1>Photo Studio</h1><p>Passport / visa photo ki print-ready sheet banayein.</p></div>
+            <div class="studio-layout">
+                <section class="content-card">
+                    <div class="section-heading"><div><h2>Photo set karein</h2><p>Size, paper aur copies chunein</p></div><span class="step-chip">EDIT</span></div>
+                    <label class="drop" id="upload-zone" for="photo-file"><input type="file" id="photo-file" accept="image/*"><b>📷 Photo yahan chunein ya drop karein</b><small>JPG, PNG ya WEBP</small></label>
+                    <div class="selected" id="selected-file" hidden><div><b id="file-name"></b><small id="file-size"></small></div><button class="remove-file" id="remove-file" aria-label="Hatayein">×</button></div>
+                    <div class="grid2">
+                        <label class="field">Photo size<select id="photo-preset"><option value="passport">Passport · 35 × 45 mm</option><option value="square">Square · 2 × 2 inch</option><option value="visa">Visa · 2 × 2 inch</option><option value="custom">Custom size</option></select></label>
+                        <label class="field">Paper<select id="paper-size"><option value="a4">A4</option><option value="4x6">Photo paper 4 × 6 inch</option></select></label>
+                        <label class="field">Copies<input type="number" id="copies" value="8" min="1" max="100"></label>
+                        <label class="field">Quality<select id="dpi"><option value="300">High · 300 DPI</option><option value="200">Standard · 200 DPI</option></select></label>
+                    </div>
+                    <div class="grid2" id="custom-fields" hidden>
+                        <label class="field">Width (mm)<input type="number" id="custom-width" value="35" min="5" max="100"></label>
+                        <label class="field">Height (mm)<input type="number" id="custom-height" value="45" min="5" max="150"></label>
+                    </div>
+                    <div class="actions"><button class="button button-primary" id="generate-button">✨ Sheet banayein</button></div>
+                    <div class="error" id="photo-error" hidden></div>
+                </section>
+                <aside class="content-card">
+                    <div class="section-heading"><div><h2>Sheet preview</h2><p>Print se pehle yahan dekhein</p></div></div>
+                    <div class="stage"><div class="paper" id="paper-preview"><div class="ph" id="ph">Photo chunein, phir<br>"Sheet banayein" dabayein</div></div></div>
+                    <div class="meta"><span id="pv-count">8 photo</span><span id="pv-paper">A4</span></div>
+                    <div class="actions two"><button class="button button-secondary" id="download-button" disabled>⬇ PNG save</button><button class="button button-primary" id="print-button" disabled>🖨 Print</button></div>
+                </aside>
+            </div>
+        </section>
+
+        <section class="view" id="resize-view">
+            <div class="head"><h1>Photo / Signature Resize</h1><p>Online form ki maang ke hisaab se size aur KB set karein.</p></div>
+            <section class="content-card narrow">
+                <label class="drop" for="rz-file"><input type="file" id="rz-file" accept="image/*"><b>📷 Photo ya signature chunein</b><small id="rz-info">Abhi kuch nahi chuna</small></label>
+                <div class="chips"><span>Jaldi bharein:</span><button class="chip" data-rz="200,230,50">Photo 200×230 · 50 KB</button><button class="chip" data-rz="140,60,20">Sign 140×60 · 20 KB</button><button class="chip" data-rz="300,300,100">300×300 · 100 KB</button></div>
+                <div class="grid3">
+                    <label class="field">Width (px)<input type="number" id="rz-w" placeholder="jaise 200"></label>
+                    <label class="field">Height (px)<input type="number" id="rz-h" placeholder="jaise 230"></label>
+                    <label class="field">Max size (KB)<input type="number" id="rz-kb" placeholder="jaise 50"></label>
+                </div>
+                <div class="actions"><button class="button button-primary" id="rz-go">⚡ Resize karein</button></div>
+                <div class="error" id="rz-err" hidden></div>
+                <div class="result" id="rz-result" hidden><img id="rz-img" alt=""><div><b id="rz-meta"></b><button class="button button-secondary" id="rz-save">⬇ Download JPG</button></div></div>
+            </section>
+        </section>
+
+        <section class="view" id="pdf-view">
+            <div class="head"><h1>Images to PDF</h1><p>Aadhaar, marksheet ya photo ko ek PDF me jodein. Order upar-neeche se badlein.</p></div>
+            <section class="content-card narrow">
+                <label class="drop" for="pdf-files"><input type="file" id="pdf-files" accept="image/*" multiple><b>📄 Images chunein (kai ek saath)</b><small>JPG, PNG ya WEBP</small></label>
+                <div class="plist" id="pdf-list"></div>
+                <div class="grid2">
+                    <label class="field">Page<select id="pdf-page"><option value="a4">A4 (fit, margin ke saath)</option><option value="orig">Image ke size ka page</option></select></label>
+                    <label class="field">File ka naam<input type="text" id="pdf-name" value="documents"></label>
+                </div>
+                <div class="actions"><button class="button button-primary" id="pdf-go" disabled>📄 PDF banayein</button></div>
+                <div class="error" id="pdf-err" hidden></div>
+            </section>
+        </section>
+
+        <section class="view" id="register-view">
+            <div class="head"><h1>Daily Register</h1><p>Har customer ka hisaab. Data sirf is browser me rehta hai.</p></div>
+            <section class="content-card">
+                <div class="reg-form">
+                    <input type="text" id="rg-who" placeholder="Customer ka naam">
+                    <input type="tel" id="rg-mob" placeholder="Mobile number" maxlength="12">
+                    <input type="text" id="rg-svc" list="svc-list" placeholder="Service">
+                    <datalist id="svc-list"><option>Passport photo</option><option>Photocopy</option><option>Print</option><option>Aadhaar update</option><option>PAN card</option><option>Online form</option><option>Scan / PDF</option><option>Lamination</option></datalist>
+                    <input type="number" id="rg-amt" placeholder="₹ Total" min="0">
+                    <input type="number" id="rg-got" placeholder="₹ Mila (khali = poora)" min="0">
+                    <select id="rg-mode"><option>Cash</option><option>UPI</option></select>
+                    <button class="button button-primary" id="rg-add">＋ Jodein</button>
+                </div>
+                <div class="totals" id="rg-tot"></div>
+                <div class="tbl-wrap"><table><thead><tr><th>Time</th><th>Customer</th><th>Service</th><th>₹</th><th>Baaki</th><th>Mode</th><th></th></tr></thead><tbody id="rg-body"></tbody></table></div>
+                <div class="actions"><button class="button button-secondary" id="rg-csv">⬇ CSV (Excel)</button><button class="button button-secondary" id="rg-backup">💾 Backup file</button><label class="button button-secondary" for="rg-restore">📂 Backup wapas lein<input type="file" id="rg-restore" accept=".json" hidden></label></div>
+                <p class="bk" id="rg-bk"></p>
+            </section>
+        </section>
+        <section class="view" id="pdfx-view">
+            <div class="head"><h1>PDF Studio</h1><p>PDF jodna, KB limit me chhota karna, ya PDF se JPG photo banana.</p></div>
+            <section class="content-card narrow">
+                <div class="grid2" style="margin-top:0">
+                    <label class="field">Kya karna hai<select id="px-mode"><option value="merge">PDF jodna (Merge)</option><option value="compress">PDF chhota karna (KB limit)</option><option value="jpg">PDF se JPG photo</option></select></label>
+                    <label class="field" id="px-kbwrap" hidden>Max size (KB)<input type="number" id="px-kb" value="200" min="10"></label>
+                </div>
+                <label class="drop" for="px-files" style="margin-top:16px"><input type="file" id="px-files" accept="application/pdf,.pdf" multiple><b>🗂️ PDF files chunein</b><small>Merge me kai file, baaki me ek ya zyada</small></label>
+                <div class="plist" id="px-list"></div>
+                <div class="actions"><button class="button button-primary" id="px-go" disabled>Chalayein</button></div>
+                <div class="error" id="px-err" hidden></div><div class="okmsg" id="px-ok" hidden></div>
+                <p class="bk">Dhyan: "chhota karna" me PDF photo ki tarah ban jati hai, isliye uska text select/copy nahi hota.</p>
+            </section>
+        </section>
+
+        <section class="view" id="links-view">
+            <div class="head"><h1>Portals / Links</h1><p>Sarkari sites ek click me khulti hain. Apni site bhi jod sakte hain.</p></div>
+            <section class="content-card">
+                <div class="links" id="ln-grid"></div>
+                <div class="reg-form" style="grid-template-columns:1fr 1.5fr auto;margin-top:18px"><input type="text" id="ln-name" placeholder="Naam"><input type="text" id="ln-url" placeholder="https://..."><button class="button button-secondary" id="ln-add">＋ Jodein</button></div>
+            </section>
+        </section>
+    </main>
+</div>
+</body>
+</html>
